@@ -15,4 +15,17 @@ const getAllProjects = (countryCode) => {
   });
 };
 
-module.exports = { getAllProjects };
+const getProject = (id) => {
+  // When using prepared statements, if you execute same statement again, it will be picked from a LRU cache
+  // which will save query preparation time and give better performance
+  return pool.then(async (connection) => {
+    // Rows and fields are returned, we take only rows now.
+    const [rows,] = await connection.execute(
+      'SELECT * FROM new_schema.project_history WHERE `userId` = ?;',
+      [id],
+    );
+    return rows;
+  });
+};
+
+module.exports = { getAllProjects, getProject };
